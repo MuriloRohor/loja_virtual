@@ -9,6 +9,3 @@ app.mount(path="/static", app=StaticFiles(directory="static"), name="static")
 
 if __name__ == "__main__":
     uvicorn.run(app="main:app", reload=True)
-    
-    
-    
