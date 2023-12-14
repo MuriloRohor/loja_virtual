@@ -5,6 +5,7 @@ from sql.UsuarioSql import *
 from util.database import criar_conexao
 
 class UsuarioRepo:
+    
     @classmethod
     def criar_tabela(cls) -> bool or False:
         try:
