@@ -55,7 +55,8 @@ def configurar_paginas_de_erro(app: FastAPI):
                 "request": request,
                 "usuario": usuario,
                 "detail": ex.detail,
-            } status_code=ex.status_code,
+            }, 
+            status_code=ex.status_code,
         )
     @app.exception_handler(Exception)
     async def erro_exception(
@@ -69,5 +70,6 @@ def configurar_paginas_de_erro(app: FastAPI):
                 "request": request,
                 "usuario": usuario,
                 "detail": "Erro interno do servidor.",
-            }status_code=500,
+            },
+            status_code=500,
         )

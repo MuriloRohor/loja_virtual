@@ -7,6 +7,7 @@ from routes.UsuarioRouter import router as usuarioRouter
 from routes.ProdutoRouter import router as produtoRouter
 
 from util.security import atualizar_cookie_autenticacao
+from util.excecoes import configurar_paginas_de_erro
 
 from repositories.UsuarioRepo import UsuarioRepo
 from repositories.ProdutoRepo import ProdutoRepo
@@ -16,9 +17,12 @@ UsuarioRepo.criar_administrador_padrao()
 UsuarioRepo.criar_usuario_padrao()
 ProdutoRepo.criar_tabela()
 
+
+
 app = FastAPI()
 
 app.middleware("http")(atualizar_cookie_autenticacao)
+configurar_paginas_de_erro(app)
 
 app.mount(path="/static", app=StaticFiles(directory="static"), name="static")
 
