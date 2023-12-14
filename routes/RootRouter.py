@@ -7,7 +7,7 @@ from models.Usuario import Usuario
 from repositories.UsuarioRepo import UsuarioRepo
 
 from util.mensagem import adicionar_cookie_mensagem, redirecionar_com_mensagem
-from util.security import adicionar_cookie_autenticacao, conferir_senha, gerar_token, obter_usuario_logado
+from util.security import adicionar_cookie_autenticacao, conferir_senha, excluir_cookie_autenticacao, gerar_token, obter_usuario_logado
 
 router = APIRouter()
 
@@ -54,4 +54,14 @@ async def post_login(
             "/login",
             "Credenciais inválidas. Tente novamente.",
             )
+    return response
+
+
+@router.get("/logout")
+async def get_logout(usuario: Usuario = Depends(obter_usuario_logado)):
+    if usuario:
+        UsuarioRepo.alterar_token_por_email("", usuario.email)
+    response = RedirectResponse("/", status.HTTP_302_FOUND)
+    excluir_cookie_autenticacao(response)
+    adicionar_cookie_mensagem(response, "Saída realizada com sucesso.")
     return response
