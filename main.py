@@ -14,6 +14,7 @@ from repositories.ProdutoRepo import ProdutoRepo
 UsuarioRepo.criar_tabela()
 UsuarioRepo.criar_administrador_padrao()
 UsuarioRepo.criar_usuario_padrao()
+ProdutoRepo.criar_tabela()
 
 app = FastAPI()
 

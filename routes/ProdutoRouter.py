@@ -31,3 +31,19 @@ async def get_index(
         "produto/index.html",
         {"request": request, "usuario": usuario, "produtos": produtos},
     )
+    
+@router.get("/inserir")
+async def get_inserir(
+    request: Request,
+    usuario: Usuario = Depends(obter_usuario_logado),
+):
+    if not usuario:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    if not usuario.admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+ 
+    return templates.TemplateResponse(
+        "produto/inserir.html",
+        {"request": request, "usuario": usuario},
+    )
+
