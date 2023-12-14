@@ -1,6 +1,7 @@
 from fastapi import (
  APIRouter,
  Depends,
+ Form,
  HTTPException,
  Path,
  Request,
@@ -95,3 +96,32 @@ async def get_alterar(
         "usuario/alterar.html",
         {"request": request, "usuario": usuario, "usuario_alterar": usuario_alterar},
     )
+
+
+@router.post("/alterar/{id_usuario:int}", response_class=HTMLResponse)
+async def post_alterar(
+    id_usuario: int = Path(),
+    nome: str = Form(...),
+    email: str = Form(...),
+    administrador: bool = Form(False),
+    usuario: Usuario = Depends(obter_usuario_logado),
+):
+    if not usuario:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    if not usuario.admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+ 
+    if id_usuario == 1:
+        response = redirecionar_com_mensagem(
+            "/usuario",
+            "Não é possível alterar dados do administrador padrão.",
+        )
+        return response
+    UsuarioRepo.alterar(
+        Usuario(id=id_usuario, nome=nome, email=email, admin=administrador)
+    )
+    response = redirecionar_com_mensagem(
+        "/usuario",
+        "Usuário alterado com sucesso.",
+    )
+    return response
