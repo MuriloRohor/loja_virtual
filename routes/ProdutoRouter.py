@@ -141,6 +141,8 @@ async def get_alterar(
 async def post_alterar(
     id_produto: int = Path(),
     nome: str = Form(...),
+    descricao: str = Form(...),
+    preco: str = Form(...),
     arquivoImagem: UploadFile = File(),
     usuario: Usuario = Depends(obter_usuario_logado),
 ):
@@ -149,7 +151,7 @@ async def post_alterar(
     if not usuario.admin:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
  
-    ProdutoRepo.alterar(Produto(id_produto, nome))
+    ProdutoRepo.alterar(Produto(id_produto, nome, descricao, preco))
     if arquivoImagem.filename:
         conteudo_arquivo = await arquivoImagem.read()
         imagem = Image.open(BytesIO(conteudo_arquivo))
