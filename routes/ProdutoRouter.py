@@ -117,3 +117,41 @@ async def post_excluir(
     return response
 
 
+@router.get("/alterar/{id_produto:int}")
+async def get_alterar(
+    request: Request,
+    id_produto: int = Path(),
+    usuario: Usuario = Depends(obter_usuario_logado),
+):
+    if not usuario:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    if not usuario.admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    produto = ProdutoRepo.obter_por_id(id_produto)
+    return templates.TemplateResponse(
+        "produto/alterar.html",
+        {"request": request, "usuario": usuario, "produto": produto},
+    )
+    
+    
+    
+@router.post("/alterar/{id_produto:int}")
+async def post_alterar(
+    id_produto: int = Path(),
+    nome: str = Form(...),
+    arquivoImagem: UploadFile = File(),
+    usuario: Usuario = Depends(obter_usuario_logado),
+):
+    if not usuario:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    if not usuario.admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+ 
+    ProdutoRepo.alterar(Produto(id_produto, nome))
+    if arquivoImagem.filename:
+        conteudo_arquivo = await arquivoImagem.read()
+        imagem = Image.open(BytesIO(conteudo_arquivo))
+        imagem_quadrada = transformar_em_quadrada(imagem)
+        imagem_quadrada.save(f"static/img/produtos/{id_produto:04d}.jpg", "JPEG")
+    response = redirecionar_com_mensagem("/produto", "Produto alterado com sucesso!")
+    return response
