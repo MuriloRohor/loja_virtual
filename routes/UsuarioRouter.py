@@ -11,6 +11,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from models.Usuario import Usuario
 from repositories.UsuarioRepo import UsuarioRepo
+from util.mensagem import redirecionar_com_mensagem
 from util.security import obter_usuario_logado
 
 router = APIRouter(prefix="/usuario")
@@ -48,3 +49,32 @@ async def get_excluir(
     return templates.TemplateResponse(
         "usuario/excluir.html",
         {"request": request, "usuario": usuario, "usuario_excluir": usuario_excluir})
+
+
+@router.post("/excluir/{id_usuario:int}", response_class=HTMLResponse)
+async def post_excluir(
+    usuario: Usuario = Depends(obter_usuario_logado),
+    id_usuario: int = Path(),
+):
+    if not usuario:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    if not usuario.admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    if id_usuario == 1:
+        response = redirecionar_com_mensagem(
+            "/usuario",
+            "Não é possível excluir o administrador padrão do sistema.",
+            )
+        return response
+    if id_usuario == usuario.id:
+        response = redirecionar_com_mensagem(
+            "/usuario",
+            "Não é possível excluir o próprio usuário que está logado.",
+            )
+        return response
+    UsuarioRepo.excluir(id_usuario)
+    response = redirecionar_com_mensagem(
+            "/usuario",
+            "Usuário excluído com sucesso.",
+            )
+    return response
