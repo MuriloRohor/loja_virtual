@@ -5,6 +5,7 @@ from fastapi import (
  File,
  Form,
  HTTPException,
+ Path,
  Request,
  UploadFile,
  status,
@@ -77,4 +78,23 @@ async def post_inserir(
         imagem_quadrada.save(f"static/img/produtos/{produto.id:04d}.jpg","JPEG")
     response = redirecionar_com_mensagem("/produto", "Produto inserido com sucesso!")
     return response
+
+
+@router.get("/excluir/{id_produto:int}")
+async def get_excluir(
+    request: Request,
+    id_produto: int = Path(),
+    usuario: Usuario = Depends(obter_usuario_logado),
+):
+    if not usuario:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    if not usuario.admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    
+    produto = ProdutoRepo.obter_por_id(id_produto)
+    return templates.TemplateResponse(
+        "produto/excluir.html",
+        {"request": request, "usuario": usuario, "produto": produto},
+    )
+
 
