@@ -45,7 +45,7 @@ class ProdutoRepo:
         try:
             with criar_conexao() as conexao:
                 cursor = conexao.cursor()
-                cursor.execute(SQL_ALTERAR,(produto.nome, produto.preco, produto.descricao, produto.id))
+                cursor.execute(SQL_ALTERAR,(produto.nome, produto.id))
             if cursor.rowcount > 0:
                 return produto
         except sqlite3.Error as e:
