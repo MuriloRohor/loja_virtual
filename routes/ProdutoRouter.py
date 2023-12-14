@@ -62,6 +62,8 @@ async def get_inserir(
 @router.post("/inserir")
 async def post_inserir(
     nome: str = Form(...),
+    descricao: str = Form(...),
+    preco: float = Form(...),
     arquivoImagem: UploadFile = File(),
     usuario: Usuario = Depends(obter_usuario_logado),
 ):
@@ -70,7 +72,7 @@ async def post_inserir(
     if not usuario.admin:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
     
-    produto = Produto(nome=nome)
+    produto = Produto(nome=nome, descricao=descricao, preco=preco)
     produto = ProdutoRepo.inserir(produto)
     if arquivoImagem.filename:
         conteudo_arquivo = await arquivoImagem.read()

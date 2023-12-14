@@ -16,6 +16,8 @@
         <tr>
             <th class="text-bg-dark">Imagem</th>
             <th class="text-bg-dark">Nome</th>
+            <th class="text-bg-dark">Descrição</th>
+            <th class="text-bg-dark">Preço</th>
             <th class="text-bg-dark">Ações</th>
         </tr>
     </thead>
@@ -27,6 +29,8 @@
                     class="border border-1 rounded rounded-1" height="48" />
             </td>
             <td>{{ p.nome }}</td>
+            <td>{{ p.descricao }}</td>
+            <td>R$ {{ p.preco }}</td>
             <td>
                 <a href="/produto/alterar/{{p.id}}" class="btn btn-secondary btn-sm">
                     <i class="bi bi-pencil"></i>
