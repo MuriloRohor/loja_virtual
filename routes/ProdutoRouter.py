@@ -1,4 +1,5 @@
 from io import BytesIO
+import os
 from fastapi import (
  APIRouter,
  Depends,
@@ -96,5 +97,23 @@ async def get_excluir(
         "produto/excluir.html",
         {"request": request, "usuario": usuario, "produto": produto},
     )
+    
+
+@router.post("/excluir/{id_produto:int}")
+async def post_excluir(
+    id_produto: int = Path(),
+    usuario: Usuario = Depends(obter_usuario_logado),
+):
+    if not usuario:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    if not usuario.admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    
+    ProdutoRepo.excluir(id_produto)
+    caminho_imagem = f"static/img/produtos/{id_produto:04d}.jpg"
+    if os.path.exists(caminho_imagem):
+        os.remove(caminho_imagem)
+    response = redirecionar_com_mensagem("/produto", "Produto excluído com sucesso!")
+    return response
 
 
