@@ -78,3 +78,20 @@ async def post_excluir(
             "Usuário excluído com sucesso.",
             )
     return response
+
+@router.get("/alterar/{id_usuario:int}", response_class=HTMLResponse)
+async def get_alterar(
+    request: Request,
+    id_usuario: int = Path(),
+    usuario: Usuario = Depends(obter_usuario_logado),
+):
+    if not usuario:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    if not usuario.admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    
+    usuario_alterar = UsuarioRepo.obter_por_id(id_usuario)
+    return templates.TemplateResponse(
+        "usuario/alterar.html",
+        {"request": request, "usuario": usuario, "usuario_alterar": usuario_alterar},
+    )
