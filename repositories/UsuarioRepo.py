@@ -10,7 +10,7 @@ class UsuarioRepo:
     def criar_tabela(cls) -> bool or False:
         try:
             with criar_conexao() as conexao:
-                cursor = conexao.criar_conexao()
+                cursor = conexao.cursor()
                 cursor.execute(SQL_CRIAR_TABELA)
                 return True
         except sqlite3.Error:
@@ -86,19 +86,18 @@ class UsuarioRepo:
             tuplas = cursor.execute(SQL_OBTER_TODOS).fetchall()
             objetos = [
                 Usuario(id=t[0], nome=t[1], email=t[2], admin=t[3]) for t in tuplas
-            ]
+                ]
             return objetos
         
     @classmethod
     def obter_por_id(cls, id_usuario: int) -> Optional[Usuario]:
         with criar_conexao() as conexao:
             cursor = conexao.cursor()
-            tupla = cursor.execute(SQL_OBTER_POR_ID,
-                                   (id_usuario,)).fetchone()
+            tupla = cursor.execute(SQL_OBTER_POR_ID, (id_usuario,)).fetchone()
             if tupla: 
                 objeto = Usuario(
                     id=tupla[0], nome=tupla[1], email=tupla[2], admin=tupla[3]
-                )
+                    )
                 return objeto
             else:
                 return None
@@ -110,9 +109,10 @@ class UsuarioRepo:
             tupla = cursor.execute(SQL_OBTER_POR_TOKEN, (token,)).fetchone()
             if tupla:
                 objeto = Usuario(
-                            id=tupla[0], nome=tupla[1], email=tupla[2], admin=tupla[3]
-                )
+                    id=tupla[0], nome=tupla[1], email=tupla[2], admin=tupla[3]
+                    )
                 return objeto
+            
     @classmethod
     def obter_por_email(cls, email: str) -> Optional[Usuario]:
         with criar_conexao() as conexao:
@@ -120,8 +120,8 @@ class UsuarioRepo:
             tupla = cursor.execute(SQL_OBTER_POR_EMAIL, (email,)).fetchone()
             if tupla:
                 objeto = Usuario(
-                            id=tupla[0], nome=tupla[1], email=tupla[2], admin=tupla[3]
-                )
+                    id=tupla[0], nome=tupla[1], email=tupla[2], admin=tupla[3]
+                    )
                 return objeto
     @classmethod
     def obter_senha_por_email(cls, email: str) -> Optional[str]:
@@ -130,11 +130,11 @@ class UsuarioRepo:
             resultado = cursor.execute(SQL_OBTER_SENHA_POR_EMAIL, (email,)).fetchone()
             if resultado:
                 return str(resultado[0])
+            
     @classmethod
     def existe_email(cls, email: str) -> bool or False:
         with criar_conexao() as conexao:
             cursor = conexao.cursor()
-            resultado = cursor.execute(SQL_EXISTE_EMAIL, 
-                                       (email,)).fetchone()
+            resultado = cursor.execute(SQL_EXISTE_EMAIL, (email,)).fetchone()
             if resultado:
                 return bool(resultado[0])

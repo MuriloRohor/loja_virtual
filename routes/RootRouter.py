@@ -16,10 +16,11 @@ templates = Jinja2Templates(directory="templates")
 @router.get("/", response_class=HTMLResponse)
 async def get_root(
     request: Request,
+    usuario: Usuario = Depends(obter_usuario_logado)
 ):
     return templates.TemplateResponse(
         "root/index.html",
-        {"request": request},
+        {"request": request, "usuario": usuario}
         )
 
 
@@ -27,15 +28,15 @@ async def get_root(
 @router.get("/login", response_class=HTMLResponse)
 async def get_login(
     request: Request,
-    usuario: Usuario = Depends(obter_usuario_logado),
+    usuario: Usuario = Depends(obter_usuario_logado)
 ):
     return templates.TemplateResponse(
         "root/login.html",
-        {"request": request, "usuario": usuario},
-        )
+        {"request": request, "usuario": usuario}
+    )
     
 
-@router.post("/login", response_class=RedirectResponse)
+@router.post("/login")
 async def post_login(
     email: str = Form(...),
     senha: str = Form(...),
@@ -53,4 +54,4 @@ async def post_login(
             "/login",
             "Credenciais inválidas. Tente novamente.",
             )
-        return response
+    return response

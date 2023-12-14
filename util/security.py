@@ -28,6 +28,7 @@ def conferir_senha(senha: str, hash_senha: str) -> bool:
         return bcrypt.checkpw(senha.encode(), hash_senha.encode())
     except ValueError:
         return False
+    
 def gerar_token(length: int = 32) -> str:
     try:
         return secrets.token_hex(length)
@@ -51,7 +52,7 @@ def excluir_cookie_autenticacao(response):
 async def atualizar_cookie_autenticacao(request: Request, call_next):
     response = await call_next(request)
     usuario = await obter_usuario_logado(request)
-    if usuario:
+    if usuario: 
         token = request.cookies["auth_token"]
         response.set_cookie(
             key="auth_token",
@@ -60,4 +61,4 @@ async def atualizar_cookie_autenticacao(request: Request, call_next):
             httponly=True,
             samesite="lax",
             )
-        return response
+    return response
