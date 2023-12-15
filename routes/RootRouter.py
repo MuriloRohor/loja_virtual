@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Form, Query, Request, status
+from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
@@ -47,15 +47,20 @@ async def get_register(
     
 ):
     if senha==confsenha:
-        senha_hash = obter_hash_senha(senha)
-        usuario = Usuario(nome=nome, email=email, senha=senha_hash, admin=False)
-        UsuarioRepo.inserir(usuario)
-        token = gerar_token()
-        UsuarioRepo.alterar_token_por_email(token, email)
-        response = RedirectResponse(return_url, status.HTTP_302_FOUND)
-        adicionar_cookie_autenticacao(response, token)
-        adicionar_cookie_mensagem(response, f"Bem vindo {nome} &#129505; .")
-        
+        if not UsuarioRepo.existe_email(email):
+            senha_hash = obter_hash_senha(senha)
+            usuario = Usuario(nome=nome, email=email, senha=senha_hash, admin=False)
+            UsuarioRepo.inserir(usuario)
+            token = gerar_token()
+            UsuarioRepo.alterar_token_por_email(token, email)
+            response = RedirectResponse(return_url, status.HTTP_302_FOUND)
+            adicionar_cookie_autenticacao(response, token)
+            adicionar_cookie_mensagem(response, f"Bem vindo {nome} &#129505; .")
+        else:
+            response = redirecionar_com_mensagem(
+            "/register",
+            "Email já cadastrado.",
+            )
     else:
         response = redirecionar_com_mensagem(
             "/register",
@@ -94,6 +99,21 @@ async def post_login(
             "Credenciais inválidas. Tente novamente.",
             )
     return response
+
+
+@router.get("/restrita", response_class=HTMLResponse)
+def get_area_restrita(
+    request: Request,
+    usuario: Usuario = Depends(obter_usuario_logado)
+):
+    
+    if not usuario:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    
+    return templates.TemplateResponse(
+        "root/restrita.html",
+        {"request": request, "usuario": usuario}
+    )
 
 @router.get("/logout")
 async def get_logout(usuario: Usuario = Depends(obter_usuario_logado)):
