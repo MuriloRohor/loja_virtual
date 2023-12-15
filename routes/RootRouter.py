@@ -4,6 +4,7 @@ from fastapi.templating import Jinja2Templates
 
 from models.Usuario import Usuario
 
+from repositories.ProdutoRepo import ProdutoRepo
 from repositories.UsuarioRepo import UsuarioRepo
 
 from util.mensagem import adicionar_cookie_mensagem, redirecionar_com_mensagem
@@ -18,9 +19,11 @@ async def get_root(
     request: Request,
     usuario: Usuario = Depends(obter_usuario_logado)
 ):
+    produtos = ProdutoRepo.obter_todos()
+    
     return templates.TemplateResponse(
         "root/index.html",
-        {"request": request, "usuario": usuario}
+        {"request": request, "usuario": usuario, "produtos": produtos}
         )
 
 
