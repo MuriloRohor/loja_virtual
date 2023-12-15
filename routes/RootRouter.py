@@ -26,8 +26,17 @@ async def get_root(
         {"request": request, "usuario": usuario, "produtos": produtos}
         )
 
-
-
+@router.get("/register", response_class=HTMLResponse)
+async def get_login(
+    request: Request,
+    usuario: Usuario = Depends(obter_usuario_logado)
+):
+    return templates.TemplateResponse(
+        "root/register.html",
+        {"request": request, "usuario": usuario}
+    )
+    
+    
 @router.get("/login", response_class=HTMLResponse)
 async def get_login(
     request: Request,
@@ -58,6 +67,17 @@ async def post_login(
             "Credenciais inválidas. Tente novamente.",
             )
     return response
+
+@router.get("/usuario/", response_class=HTMLResponse)
+async def get_login(
+    request: Request,
+    usuario: Usuario = Depends(obter_usuario_logado)
+):
+    return templates.TemplateResponse(
+        "root/login.html",
+        {"request": request, "usuario": usuario}
+    )
+
 
 
 @router.get("/logout")

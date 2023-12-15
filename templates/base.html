@@ -25,6 +25,8 @@ Virtual" height="48">
                 <div class="navbar-nav">
                     <a class="nav-link text-center {{'active' if request.url.path == '/'}}" href="/">Principal</a>
                     {% if not usuario: %}
+                    <a class="nav-link text-center text-success {{'active' if request.url.path == '/login'}}"
+                        href="/register">Criar Conta</a>
                     <a class="nav-link text-center {{'active' if request.url.path == '/login'}}"
                         href="/login">Entrar</a>
                     {% else: %}
