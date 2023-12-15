@@ -45,20 +45,15 @@ async def get_index(
     
     
 @router.get("/{id}")
-async def get_index(
+async def get_details_index(
     request: Request,
     id: int,
     usuario: Usuario = Depends(obter_usuario_logado),
 ):
-    if not usuario:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    if not usuario.admin:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
-    
-    produtos = ProdutoRepo.obter_todos()
+    produto = ProdutoRepo.obter_por_id(id)
     return templates.TemplateResponse(
-        "produto/index.html",
-        {"request": request, "usuario": usuario, "produtos": produtos},
+        "root/detalhes.html",
+        {"request": request, "usuario": usuario, "produto": produto},
     )
     
 @router.get("/inserir")

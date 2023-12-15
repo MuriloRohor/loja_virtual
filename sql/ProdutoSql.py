@@ -25,7 +25,7 @@ SQL_OBTER_TODOS = """
  ORDER BY nome
 """
 SQL_OBTER_POR_ID = """
- SELECT id, nome
+ SELECT id, nome, descricao, preco
  FROM produto
  WHERE id=?
 """
